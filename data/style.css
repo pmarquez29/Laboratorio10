@@ -1,0 +1,69 @@
+body{
+    background: rgb(231, 130, 58);
+    background: linear-gradient(0deg, rgb(247, 114, 88) 5%, rgb(255, 177, 88) 42%);
+    background-repeat: no-repeat;
+    height: 100%;
+}
+
+h1{
+    font-family: 'Bungee Spice', cursive;
+}
+
+.form-label{
+    font-family: 'Bungee Spice', cursive;
+}
+
+.barra{
+    background-color: black;
+    color: white;
+    text-align: center;
+    position: absolute;
+    bottom: auto;
+    width: 100%;
+    height: 40px;
+}
+
+h3{
+    font-family: 'Righteous', cursive;
+    color: rgb(196, 81, 0);
+}
+
+
+h2{
+    font-family: 'Bungee Spice', cursive;
+    font-size: 30px;
+}
+
+.img-fluid{
+    min-width: 200px;
+}
+
+.int-img{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+
+@keyframes rotate {from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}}
+@-webkit-keyframes rotate {from {-webkit-transform: rotate(0deg);}
+  to {-webkit-transform: rotate(360deg);}}
+
+
+/* ventilador img rotate */
+.ventilador{
+    -webkit-animation: 3s rotate linear infinite;
+    animation: 3s rotate linear infinite;
+    -webkit-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+    animation-play-state: paused;
+}
+
+.nav-link{
+    font-family: 'Bungee Spice', cursive;
+}
+
+
+
+/* background: rgb(13,0,226);
+background: linear-gradient(90deg, rgba(13,0,226,1) 0%, rgba(73,135,255,1) 35%, rgba(84,226,255,1) 100%); */
