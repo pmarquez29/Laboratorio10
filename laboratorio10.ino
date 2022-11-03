@@ -24,15 +24,36 @@ float milliVolt,tempC;
 #define PWM1_Res   8    //resolucion    
 #define PWM1_Freq  1000  //frecuencia
 
-int pwm1;
-int PWM1_DutyCycle = 0;
+int pwm;
+int PWM_DutyCycle = 0;
 
 String pwmValue;
  
 
-int foco = 19;
+int pin_redLed = 21;
+int pin_greenLed = 22;
+int pin_blueLed = 23;
+int pin_poten = A0;
+int pin_button = 13;
+int pin_ldr = A3;
+
+int rele = 19;
 int vent1 = 5;
 int vent2= 18;
+
+String s_rssi = "";
+String s_ip = "";
+String s_hostname = "";
+String s_wifiStatus ="";
+String s_ssid ="";
+String s_psk = "";
+String s_bssid = ""; 
+
+int s_foco = 0;
+int page_current = 0;
+int value_pwm = 0;
+int value_ldr = 0;
+int limit_ldr = 0;
 
 int pin_R = 21;
 int pin_G = 22;
@@ -86,14 +107,14 @@ String getValues(){
   readings["pwm"] = value_pwm;
   readings["ldr"] = value_ldr;
   readings["limldr"] = limit_ldr;
-  readings["pir"] = value_pir;
   String jsonString = JSON.stringify(readings);
   return jsonString;
 }
 
  String gettemp(){
 // Lectura de los datos del sensor
-  datoVal = analogRead(pin_LM35);
+//  datoVal = analogRead(pin_LM35);
+  datoVal = analogRead(pin_ldr);
   temp["datoVal"]   = String(datoVal);
    // Convirtiendo los datos del ADC a    milivoltios
   temp["mil"] =  String(datoVal * (ADC_VREF_mV / ADC_RESOLUTION));
@@ -148,18 +169,6 @@ void setup() {
   server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
             request->send(SPIFFS, "/style.css", "text/css");
             });      
-            /*  
-server.on("/ADC", HTTP_GET, [](AsyncWebServerRequest *request){
-    String json = getSensorReadings();
-    request->send(200, "application/json", json);
-    json = String();
-  });
-  */
-  
- /*
-  * 
-  */
-
    server.on("/INFO", HTTP_GET, [](AsyncWebServerRequest *request){
     String json = getinfo();
     request->send(200, "application/json", json);
