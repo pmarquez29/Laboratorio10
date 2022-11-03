@@ -14,16 +14,12 @@ Sensor LMR35
 */
 #define ADC_VREF_mV    3300.0 // 3.3v en millivoltios
 #define ADC_RESOLUTION 4096.0
-#define PIN_LM35       33 // ESP32 pin GIOP36 (ADC0) conectado al LM35
+#define pin_LM35       33 // ESP32 pin GIOP36 (ADC0) conectado al LM35
 #define factor 0.0805860805860
 
 int datoVal;
 float milliVolt,tempC,tempF;
 
-
- /*
-  * PWMVALUE
-  */
 #define PWM1_Ch    0    //canales
 #define PWM1_Res   8    //resolucion    
 #define PWM1_Freq  1000  //frecuencia
@@ -36,37 +32,27 @@ float milliVolt,tempC,tempF;
 int pwm1,pwm2,pwm3;
 int PWM1_DutyCycle = 0;
 
-
- int ahora1 = 1638;
-
-int ahora2 =1638;
 String pwmValue;
  
 
 int rele = 18;
 int rele2 =23;
 int rele3= 14;
-int ledRojo = 22;
-int ledVerde = 21;
-int ledAzul = 19;
 
+int pin_redLed = 21;
+int pin_greenLed = 22;
+int pin_blueLed = 23;
 int color=1;
 
 
 AsyncWebServer server(80);
-
-
-                 //Definimos el puerto de comunicaciones
+//Definimos el puerto de comunicaciones
 // Variable to store the HTTP request
 String header;
  
 
-JSONVar info;
+JSONVar readings;
 JSONVar temp;
-JSONVar luz;
-
-
-
 
 
 void initWiFi() {
@@ -83,6 +69,15 @@ void initWiFi() {
   Serial.print("Direccion IP:\t");
   // Imprimimos la ip que le ha dado nuestro router
   Serial.println(WiFi.localIP());
+  
+  s_ip = WiFi.localIP().toString().c_str();
+  s_rssi = String(String(WiFi.RSSI()).toInt()*-1);
+  s_hostname = WiFi.getHostname();
+  s_wifiStatus =WiFi.status();
+  s_ssid =WiFi.SSID().c_str();
+  s_psk = WiFi.psk().c_str();
+  s_bssid = WiFi.BSSIDstr().c_str(); 
+  
 }
 
 void elegirColor(int color){
@@ -117,19 +112,27 @@ digitalWrite(ledAzul,255);
 }
 
 
- String getinfo(){
-
-  info["dip"] = String(WiFi.localIP());
-  info["status"] =  String(WiFi.status());
-  info["ssid"] =  String(WiFi.SSID());
-  info["rsid"] =  WiFi.RSSI();
-  String jsonString = JSON.stringify(info);
+String getValues(){
+  
+  readings["rssi"] = String(s_rssi);
+  readings["ip"] = s_ip;
+  readings["hostname"] = s_hostname;
+  readings["wifiStatus"] = s_wifiStatus;
+  readings["ssid"] = s_ssid;
+  readings["psk"] = s_psk;
+  readings["bssid"] = s_bssid;
+  readings["statusFoco"] = s_foco;
+  readings["pwm"] = value_pwm;
+  readings["ldr"] = value_ldr;
+  readings["limldr"] = limit_ldr;
+  readings["pir"] = value_pir;
+  String jsonString = JSON.stringify(readings);
   return jsonString;
 }
 
  String gettemp(){
 // Lectura de los datos del sensor
-  datoVal = analogRead(PIN_LM35);
+  datoVal = analogRead(pin_LM35);
   temp["datoVal"]   = String(datoVal);
    // Convirtiendo los datos del ADC a    milivoltios
   temp["mil"] =  String(datoVal * (ADC_VREF_mV / ADC_RESOLUTION));
@@ -155,8 +158,8 @@ void setup() {
   pinMode(33,INPUT);
 
   pinMode(ledRojo,OUTPUT);
-pinMode(ledVerde,OUTPUT);
-pinMode(ledAzul,OUTPUT);
+  pinMode(ledVerde,OUTPUT);
+  pinMode(ledAzul,OUTPUT);
 
 //  DS18B20.begin();      // initializando el sensor DS18B20
   initWiFi();
