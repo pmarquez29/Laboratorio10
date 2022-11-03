@@ -54,7 +54,6 @@ function getData(){
   xhr.send();
 }
 
-
 // Create Temperature Gauge
 var gaugeTempC = new LinearGauge({
   renderTo: 'gauge-temperatureC',
