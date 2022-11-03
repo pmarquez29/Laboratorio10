@@ -72,21 +72,19 @@ var gaugeTempC = new LinearGauge({
   valueDec: 2,
   valueInt: 2,
   majorTicks: [
-      "-10",
-      "-5",
+
       "0",
-      "5",
-      "10",
-      "15",
       "20",
-      "25",
-      "30",
-      "35",
       "40",
-      "45",
-      "50",
-      "55",
-      "60"
+      "60",
+      "80",
+      "100",
+      "120",
+      "140",
+      "160",
+      "180",
+      "200"
+
   ],
   minorTicks: 5,
   strokeTicks: true,

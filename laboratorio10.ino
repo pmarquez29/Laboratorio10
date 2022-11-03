@@ -18,31 +18,25 @@ Sensor LMR35
 #define factor 0.0805860805860
 
 int datoVal;
-float milliVolt,tempC,tempF;
+float milliVolt,tempC;
 
 #define PWM1_Ch    0    //canales
 #define PWM1_Res   8    //resolucion    
 #define PWM1_Freq  1000  //frecuencia
-#define PWM2_Ch    1
-#define PWM2_Res   8
-#define PWM2_Freq  1000
-#define PWM3_Ch    2
-#define PWM3_Res   8
-#define PWM3_Freq  1000
-int pwm1,pwm2,pwm3;
+
+int pwm1;
 int PWM1_DutyCycle = 0;
 
 String pwmValue;
  
 
-int rele = 18;
-int rele2 =23;
-int rele3= 14;
+int foco = 19;
+int vent1 = 5;
+int vent2= 18;
 
-int pin_redLed = 21;
-int pin_greenLed = 22;
-int pin_blueLed = 23;
-int color=1;
+int pin_R = 21;
+int pin_G = 22;
+int pin_B = 23;
 
 
 AsyncWebServer server(80);
@@ -79,39 +73,6 @@ void initWiFi() {
   s_bssid = WiFi.BSSIDstr().c_str(); 
   
 }
-
-void elegirColor(int color){
-  if(color == 1) { //Hacer color rojo
-digitalWrite(ledRojo,255);
-digitalWrite(ledVerde,0);
-digitalWrite(ledAzul,0);
-  }else if (color==2){
- 
-//Hacer color verde
-digitalWrite(ledRojo,0);
-digitalWrite(ledVerde,255);
-digitalWrite(ledAzul,0);
-  }else if (color ==3){
- 
-//Hacer color azul
-digitalWrite(ledRojo,0);
-digitalWrite(ledVerde,0);
-digitalWrite(ledAzul,255);
-  }else if (color==4){
-//Hacer color amarillo
-digitalWrite(ledRojo,255);
-digitalWrite(ledVerde,255);
-digitalWrite(ledAzul,0);
-  
- }else if (color==5){
-//Hacer color magenta
-digitalWrite(ledRojo,255);
-digitalWrite(ledVerde,0);
-digitalWrite(ledAzul,255);
- }
-}
-
-
 String getValues(){
   
   readings["rssi"] = String(s_rssi);
@@ -152,19 +113,19 @@ void setup() {
 
   
   pinMode(rele,OUTPUT);
-  pinMode(rele2,OUTPUT);
-  pinMode(rele3,OUTPUT);
+  pinMode(vent1,OUTPUT);
+  pinMode(vent2,OUTPUT);
 
   pinMode(33,INPUT);
 
-  pinMode(ledRojo,OUTPUT);
-  pinMode(ledVerde,OUTPUT);
-  pinMode(ledAzul,OUTPUT);
+  pinMode(pin_R,OUTPUT);
+  pinMode(pin_G,OUTPUT);
+  pinMode(pin_B,OUTPUT);
 
-//  DS18B20.begin();      // initializando el sensor DS18B20
+
   initWiFi();
 
- // digitalWrite(PinLedR, LOW); digitalWrite(PinLedG, LOW); digitalWrite(PinLedB, LOW);  
+ // digitalWrite(ledRojo, LOW); digitalWrite(ledVerde, LOW); digitalWrite(PinLedB, LOW);  
   if(!SPIFFS.begin())
      { Serial.println("ha ocurrido un error al montar SPIFFS");
        return; }
@@ -217,19 +178,19 @@ server.on("/ADC", HTTP_GET, [](AsyncWebServerRequest *request){
 
 server.on("/ON", HTTP_GET, [](AsyncWebServerRequest *request){
              digitalWrite(rele, HIGH); 
-              digitalWrite(ledRojo,255);
-digitalWrite(ledVerde,0);
-digitalWrite(ledAzul,0);
+              digitalWrite(pin_R,255);
+              digitalWrite(pin_G,0);
+              digitalWrite(pin_B,0);
              //String json = getserv();
              Serial.print("Encendido");
            request->send(0);
    // json = String();
             });
 server.on("/OFF", HTTP_GET, [](AsyncWebServerRequest *request){
-             digitalWrite(rele, LOW); 
-             digitalWrite(ledRojo,0);
-digitalWrite(ledVerde,255);
-digitalWrite(ledAzul,0);
+            digitalWrite(rele, LOW); 
+            digitalWrite(ledRojo,0);
+            digitalWrite(ledVerde,0);
+            digitalWrite(ledAzul,0);
 
              //String json = getserv();
             Serial.print("Apagado");
@@ -238,13 +199,13 @@ digitalWrite(ledAzul,0);
             });
 //Ventilador 
 server.on("/VON", HTTP_GET, [](AsyncWebServerRequest *request){
-             digitalWrite(rele2, HIGH); 
-             digitalWrite(rele3, HIGH);
+             digitalWrite(vent1, HIGH); 
+             digitalWrite(vent2, HIGH);
              //String json = getserv();
              Serial.print("Encendido");
              digitalWrite(ledRojo,0);
-digitalWrite(ledVerde,0);
-digitalWrite(ledAzul,255);
+             digitalWrite(ledVerde,0);
+             digitalWrite(ledAzul,255);
            request->send(0);
    // json = String();
             });
@@ -253,9 +214,9 @@ server.on("/VOFF", HTTP_GET, [](AsyncWebServerRequest *request){
             digitalWrite(rele3, LOW); 
 
              //String json = getserv();
-             digitalWrite(ledRojo,255);
-digitalWrite(ledVerde,0);
-digitalWrite(ledAzul,255);
+             digitalWrite(ledRojo,0);
+             digitalWrite(ledVerde,0);
+             digitalWrite(ledAzul,0);
             Serial.print("Apagado");
            request->send(0);
    // json = String();
@@ -282,17 +243,13 @@ server.on("/SLIDER", HTTP_POST, [](AsyncWebServerRequest *request){
             pwmValue = request->arg("bomb");
             Serial.print("PWM:\t");
             Serial.println(pwmValue);
-            ledcWrite(PWM1_Ch, pwmValue.toInt()); 
+            ledcWrite(PWM_Ch, pwmValue.toInt()); 
             request->redirect("/");
                   
             });  
 
-        
-  
   server.begin();
 
-  
-  
 }  
 void loop() {
   datoVal =50;
@@ -300,16 +257,15 @@ void loop() {
 if(mod==true){
   if (datoC>(valor*1.05)){
     digitalWrite(rele, LOW);    
-    digitalWrite(rele2, HIGH);
-    digitalWrite(rele3, HIGH);
+    digitalWrite(vent1, HIGH);
+    digitalWrite(vent2, HIGH);
     estado="1";
   }else if (datoC<(valor*0.95)){
     digitalWrite(rele, HIGH);    
-    digitalWrite(rele2,LOW);
-    digitalWrite(rele3,LOW);
+    digitalWrite(vent1,LOW);
+    digitalWrite(vent2,LOW);
     estado="2";
   }
- 
 }else {
    estado="0";
 }
